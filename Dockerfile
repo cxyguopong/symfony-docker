@@ -10,6 +10,9 @@ ARG CADDY_VERSION=2
 # "php" stage
 FROM php:${PHP_VERSION}-fpm-alpine AS symfony_php
 
+RUN set -eux && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories;
+
+
 # persistent / runtime deps
 RUN apk add --no-cache \
 		acl \
@@ -115,6 +118,9 @@ ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
 
 FROM caddy:${CADDY_VERSION}-builder-alpine AS symfony_caddy_builder
+
+RUN set -eux && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories; \
+	go env -w GOPROXY=https://goproxy.cn;
 
 RUN xcaddy build \
 	--with github.com/dunglas/mercure \
